@@ -1,0 +1,2 @@
+type,brand,color,license_plate,model,matriculation_date,mileage
+Car,Toyota,Red,1234ABC,Corolla,2015-01-01,60000.0

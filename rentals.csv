@@ -1,0 +1,2 @@
+vehicle_plate,client_id,start_date,end_date,kms_allowed,kms_done,insurance_type
+1234ABC,C001,2026-04-29,2026-05-08,500.0,0.0,basic
