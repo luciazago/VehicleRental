@@ -10,24 +10,22 @@ class User(ABC):
         self._validate_name(name)
         self._validate_date_of_birth(date_of_birth)
         self._validate_user_id(user_id)
-
         self.__name = name.strip()
         self.__date_of_birth = date_of_birth
         self.__user_id = str(user_id).strip()
 
     def _validate_name(self, name):
-        if not isinstance(name, str) or not name.strip():
+        if not isinstance(name, str) or not name.strip(): #checks that name is a string and that that the string is not empty or only spaces (after removing spaces, is the string empty?)
             raise ValueError("Name cannot be empty.")
 
     def _validate_date_of_birth(self, dob):
         if not isinstance(dob, date):
             raise InvalidAgeError("Date of birth must be a date object.")
-
         if dob > date.today():
             raise InvalidAgeError("Date of birth cannot be in the future.")
 
     def _validate_user_id(self, user_id):
-        if not user_id or not str(user_id).strip():
+        if not user_id or not str(user_id).strip(): #Checks if the ID is empty or only spaces.
             raise InvalidIDError("User ID cannot be empty.")
 
     @property
@@ -54,7 +52,7 @@ class User(ABC):
         return relativedelta(date.today(), self.__date_of_birth).years
 
     @abstractmethod
-    def get_info(self):  # pragma: no cover
+    def get_info(self): 
         pass
 
     def to_csv_row(self):
@@ -62,10 +60,9 @@ class User(ABC):
             "type": self.__class__.__name__,
             "name": self.name,
             "date_of_birth": self.date_of_birth.isoformat(),
-            "user_id": self.user_id
-        }
+            "user_id": self.user_id}
 
-    def __eq__(self, other):
+    def __eq__(self, other): #Checks if other is actually a User object.
         if not isinstance(other, User):
             return NotImplemented
         return self.user_id == other.user_id
