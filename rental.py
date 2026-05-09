@@ -1,13 +1,7 @@
 from datetime import date
-from exceptions import (
-    InvalidRentalPeriodError,
-    RentalAlreadyFinishedError,
-    KmsExceededError,
-    InvalidKmsAllowedError
-)
+from exceptions import InvalidRentalPeriodError, RentalAlreadyFinishedError, KmsExceededError, InvalidKmsAllowedError
 from vehicle import Vehicle
 from client import Client
-
 
 class Rental:
 
@@ -16,28 +10,20 @@ class Rental:
     def __init__(self, vehicle, client, start_date, end_date, kms_allowed, insurance_type):
         if not isinstance(vehicle, Vehicle):
             raise TypeError("Vehicle must be a Vehicle object.")
-
         if not isinstance(client, Client):
             raise TypeError("Client must be a Client object.")
-
         if not isinstance(start_date, date) or not isinstance(end_date, date):
             raise InvalidRentalPeriodError("Start date and end date must be date objects.")
-
         if end_date < start_date:
             raise InvalidRentalPeriodError("End date cannot be before start date.")
-
         if not isinstance(kms_allowed, (int, float)) or kms_allowed <= 0:
             raise InvalidKmsAllowedError("Kms allowed must be a positive number.")
-
         if not isinstance(insurance_type, str):
             raise ValueError("Insurance type must be text.")
-
         insurance_type = insurance_type.lower().strip()
 
         if insurance_type not in self.VALID_INSURANCE:
-            raise ValueError(
-                f"Invalid insurance type. Choose from: {self.VALID_INSURANCE}"
-            )
+            raise ValueError(f"Invalid insurance type. Choose from: {self.VALID_INSURANCE}")
 
         self.__vehicle = vehicle
         self.__client = client
@@ -76,7 +62,7 @@ class Rental:
         return self.__insurance_type
 
     def is_active(self):
-        return self.__start_date <= date.today() <= self.__end_date
+        return self.__start_date <= date.today() <= self.__end_date #returns: True if the rental is currently active ; False if the rental has not started yet or already ended
 
     def is_finished(self):
         return date.today() > self.__end_date
@@ -87,24 +73,19 @@ class Rental:
     def modify_rental(self, new_end_date=None, new_kms_allowed=None, new_insurance_type=None):
         if self.is_finished():
             raise RentalAlreadyFinishedError("Cannot modify a finished rental.")
-
         if new_end_date is not None:
             if not isinstance(new_end_date, date):
                 raise InvalidRentalPeriodError("New end date must be a date object.")
-
             if new_end_date < self.__start_date:
                 raise InvalidRentalPeriodError("New end date cannot be before start date.")
-
+            
             self.__end_date = new_end_date
 
         if new_kms_allowed is not None:
             if not isinstance(new_kms_allowed, (int, float)) or new_kms_allowed <= 0:
                 raise InvalidKmsAllowedError("Kms allowed must be a positive number.")
-
             if new_kms_allowed < self.__kms_done:
-                raise InvalidKmsAllowedError(
-                    "Kms allowed cannot be lower than kms already done."
-                )
+                raise InvalidKmsAllowedError("Kms allowed cannot be lower than kms already done.")
 
             self.__kms_allowed = float(new_kms_allowed)
 
@@ -115,9 +96,7 @@ class Rental:
             new_insurance_type = new_insurance_type.lower().strip()
 
             if new_insurance_type not in self.VALID_INSURANCE:
-                raise ValueError(
-                    f"Invalid insurance type. Choose from: {self.VALID_INSURANCE}"
-                )
+                raise ValueError(f"Invalid insurance type. Choose from: {self.VALID_INSURANCE}")
 
             self.__insurance_type = new_insurance_type
 
@@ -127,11 +106,8 @@ class Rental:
 
         if not isinstance(kms, (int, float)) or kms <= 0:
             raise InvalidKmsAllowedError("Kms to add must be a positive number.")
-
         if self.__kms_done + kms > self.__kms_allowed:
-            raise KmsExceededError(
-                f"Adding {kms} km would exceed the allowed {self.__kms_allowed} km."
-            )
+            raise KmsExceededError(f"Adding {kms} km would exceed the allowed {self.__kms_allowed} km.")
 
         self.__kms_done += kms
         self.__vehicle.update_mileage(self.__vehicle.mileage + kms)
@@ -142,7 +118,6 @@ class Rental:
     def set_kms_done_from_csv(self, kms_done):
         if not isinstance(kms_done, (int, float)) or kms_done < 0:
             raise ValueError("Kms done must be a non-negative number.")
-
         if kms_done > self.__kms_allowed:
             raise KmsExceededError("Kms done cannot be higher than kms allowed.")
 
@@ -160,17 +135,12 @@ class Rental:
         }
 
     def __eq__(self, other):
-        if not isinstance(other, Rental):
-            return NotImplemented
-
-        return (
-            self.vehicle.license_plate == other.vehicle.license_plate
-            and self.client.user_id == other.client.user_id
-            and self.start_date == other.start_date
-        )
+        if not isinstance(other, Rental): #checks if other is actually a Rental object.
+            return NotImplemented #if it is not a rental, Python stops the comparison.
+        return (self.vehicle.license_plate == other.vehicle.license_plate and self.client.user_id == other.client.user_id and self.start_date == other.start_date) #checks if both rentals are for the same vehicle, belong to the same clinet, and start on the same date
 
     def __str__(self):
-        if self.is_active():
+        if self.is_active(): #checks the rental status and saves it in the variable status.
             status = "ACTIVE"
         elif self.is_finished():
             status = "FINISHED"
@@ -182,5 +152,4 @@ class Rental:
             f"| Client: {self.client.user_id} "
             f"| {self.start_date} to {self.end_date} "
             f"| {self.kms_done:.0f}/{self.kms_allowed:.0f} km "
-            f"| Insurance: {self.insurance_type}"
-        )
+            f"| Insurance: {self.insurance_type}")
